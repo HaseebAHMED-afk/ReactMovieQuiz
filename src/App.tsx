@@ -38,10 +38,31 @@ function App() {
 
 
   const nextQuestion = async() => {
-    
+    const nextQuestion = number + 1;
+    if(number === TOTAL_QUESTIONS){
+      setGameOver(true);
+    }else{ 
+    setNumber(nextQuestion);
+    }
   }
 
-  const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {}
+  const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if(!gameOver){
+      const answer = e.currentTarget.value;
+
+      const correct = questions[number].correct_answer === answer;
+      if(correct) setScore(prev => prev + 5);
+
+      const answerObject = {
+        question: questions[number].question,
+        answer,
+        correct,
+        correctAnswer: questions[number].correct_answer
+      }
+
+      setUserAnswer( prev => [...prev , answerObject])
+    }
+  }
 
   return (
     <div>
@@ -49,7 +70,7 @@ function App() {
     { !gameOver ||  userAnswers.length === TOTAL_QUESTIONS ? (<h2 className='score'>Score: {score} </h2>) : null }
     { loading ? (<h2 className='loading' >Loading</h2>): null }
     {gameOver || userAnswers.length === TOTAL_QUESTIONS ? (<button className='start' onClick={startQuiz}>Start</button>): null }
-    { !gameOver && !loading && questions ? ( <QuestionCard 
+    { !gameOver && !loading  ? ( <QuestionCard 
       questionNumber={number + 1}
       totalQuestions={TOTAL_QUESTIONS}
       question = {questions[number].question}
@@ -58,7 +79,8 @@ function App() {
       callback={checkAnswer}
     />) : null}
    
-    <button onClick={nextQuestion} >Next</button>
+    { !gameOver && !loading && userAnswers.length === number+1 && number !== TOTAL_QUESTIONS -1 ? (
+    <button onClick={nextQuestion} className="next-button" >Next</button>) : null}
     </div>
   );
 }
